@@ -7,6 +7,7 @@
 // Las rutas actúan como intermediarias entre las peticiones y los controladores.
 
 import express from 'express'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import conectarDB from './config/db.mjs'
 import rutasApiCanchas from './routes/apiCanchas.mjs'
@@ -26,6 +27,9 @@ conectarDB()
 
 // Permite que Express lea el body de las peticiones en formato JSON
 app.use(express.json())
+
+// Habilitar CORS para que el front pueda consumir la API desde otro origen
+app.use(cors())
 
 // Servir los archivos estáticos del front-end (HTML, CSS, JS del cliente)
 app.use(express.static('front'))
