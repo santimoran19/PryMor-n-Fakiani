@@ -2,5 +2,4 @@ node_modules/
 
 # Variables de entorno - contiene datos sensibles como contraseñas y URIs de DB
 .env
-front/supabaseClient.js
 
