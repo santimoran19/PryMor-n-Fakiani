@@ -16,8 +16,6 @@
             <a href="index.html">Inicio</a>
             <a href="canchas.html">Canchas</a>
             <a href="reservas.html">Reservas</a>
-            <!-- El link al admin no está en la nav pública para que no sea tan visible.
-                 En TP4 esto se protegerá con autenticación JWT. -->
             <a href="admin.html" class="nav-admin">Panel Admin</a>
         </nav>
     </header>
@@ -25,15 +23,11 @@
     <main>
         <h2>Panel de Administración de Canchas</h2>
 
-        <!-- ── Formulario: Alta y Modificación ───────────────────────────── -->
-        <!-- Este formulario sirve tanto para crear una cancha nueva
-             como para editar una existente (el modo se cambia por JS) -->
+        <!-- ── Formulario: Alta ──────────────────────────────────────────── -->
         <section class="admin-form-section">
-            <h3 id="form-titulo">Agregar nueva cancha</h3>
+            <h3>Agregar nueva cancha</h3>
 
             <form id="form-cancha" class="admin-form">
-
-                <!-- Campo oculto que almacena el ID cuando estamos editando -->
                 <input type="hidden" id="campo-id">
 
                 <div class="form-grupo">
@@ -68,32 +62,75 @@
 
                 <div class="form-botones">
                     <button type="submit" id="btn-guardar" class="btn-admin btn-guardar">Agregar cancha</button>
-                    <!-- El botón cancelar solo aparece cuando estamos editando -->
-                    <button type="button" id="btn-cancelar" class="btn-admin btn-cancelar" style="display: none;">
-                        Cancelar
-                    </button>
                 </div>
-
             </form>
 
-            <!-- Mensaje de feedback para el usuario (éxito o error) -->
             <div id="mensaje-form" class="mensaje-form" style="display: none;"></div>
         </section>
 
         <!-- ── Tabla: Listado de canchas ──────────────────────────────────── -->
         <section class="admin-tabla-section">
             <h3>Canchas registradas</h3>
-
             <div id="contenedor-tabla">
                 <p>Cargando canchas...</p>
             </div>
         </section>
-
     </main>
 
     <footer>
         <p>Padel & Gol &copy; 2026 - Proyecto AW2 - IES 21</p>
     </footer>
+
+    <!-- ── Modal de Edición ──────────────────────────────────────────────── -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar cancha</h3>
+                <button id="btn-modal-cerrar" class="btn-modal-cerrar" type="button">&#x2715;</button>
+            </div>
+
+            <form id="form-editar" class="admin-form">
+                <input type="hidden" id="modal-id">
+
+                <div class="form-grupo">
+                    <label for="modal-nombre">Nombre de la cancha</label>
+                    <input type="text" id="modal-nombre" required>
+                </div>
+
+                <div class="form-grupo">
+                    <label for="modal-deporte">Deporte</label>
+                    <select id="modal-deporte" required>
+                        <option value="">-- Seleccioná un deporte --</option>
+                        <option value="Padel">Padel</option>
+                        <option value="Futbol 5">Futbol 5</option>
+                        <option value="Futbol 7">Futbol 7</option>
+                    </select>
+                </div>
+
+                <div class="form-grupo">
+                    <label for="modal-precio">Precio por hora ($)</label>
+                    <input type="number" id="modal-precio" min="0" required>
+                </div>
+
+                <div class="form-grupo">
+                    <label for="modal-capacidad">Capacidad (personas)</label>
+                    <input type="number" id="modal-capacidad" min="1" required>
+                </div>
+
+                <div class="form-grupo form-grupo-check">
+                    <label for="modal-disponible">Disponible</label>
+                    <input type="checkbox" id="modal-disponible">
+                </div>
+
+                <div class="form-botones">
+                    <button type="submit" class="btn-admin btn-guardar">Guardar cambios</button>
+                    <button type="button" id="btn-modal-cancelar" class="btn-admin btn-cancelar">Cancelar</button>
+                </div>
+            </form>
+
+            <div id="mensaje-modal" class="mensaje-form" style="display:none"></div>
+        </div>
+    </div>
 
     <script src="./scripts/script_admin.js"></script>
 

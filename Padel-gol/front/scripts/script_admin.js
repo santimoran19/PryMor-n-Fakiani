@@ -1,64 +1,62 @@
-// Script del panel de administración de canchas.
-// Maneja las operaciones CRUD desde el front-end:
-//   - Listar todas las canchas en una tabla
-//   - Crear una nueva cancha con el formulario
-//   - Editar una cancha existente (rellena el formulario con los datos actuales)
-//   - Eliminar una cancha (con confirmación previa)
-
-// URL base de la API CRUD
 const API_URL = '/api/canchas'
 
-// ── Referencias a elementos del DOM ──────────────────────────────────────────
-const formulario       = document.getElementById('form-cancha')
-const campoId          = document.getElementById('campo-id')
-const campoNombre      = document.getElementById('campo-nombre')
-const campoDeporte     = document.getElementById('campo-deporte')
-const campoPrecio      = document.getElementById('campo-precio')
-const campoCapacidad   = document.getElementById('campo-capacidad')
-const campoDisponible  = document.getElementById('campo-disponible')
-const btnGuardar       = document.getElementById('btn-guardar')
-const btnCancelar      = document.getElementById('btn-cancelar')
-const formTitulo       = document.getElementById('form-titulo')
-const mensajeForm      = document.getElementById('mensaje-form')
-const contenedorTabla  = document.getElementById('contenedor-tabla')
+// ── Referencias DOM — formulario de alta ─────────────────────────────────────
+const formulario      = document.getElementById('form-cancha')
+const campoId         = document.getElementById('campo-id')
+const campoNombre     = document.getElementById('campo-nombre')
+const campoDeporte    = document.getElementById('campo-deporte')
+const campoPrecio     = document.getElementById('campo-precio')
+const campoCapacidad  = document.getElementById('campo-capacidad')
+const campoDisponible = document.getElementById('campo-disponible')
+const mensajeForm     = document.getElementById('mensaje-form')
+const contenedorTabla = document.getElementById('contenedor-tabla')
 
-// ── Funciones de utilidad ─────────────────────────────────────────────────────
+// ── Referencias DOM — modal de edición ───────────────────────────────────────
+const modalOverlay    = document.getElementById('modal-overlay')
+const formEditar      = document.getElementById('form-editar')
+const modalId         = document.getElementById('modal-id')
+const modalNombre     = document.getElementById('modal-nombre')
+const modalDeporte    = document.getElementById('modal-deporte')
+const modalPrecio     = document.getElementById('modal-precio')
+const modalCapacidad  = document.getElementById('modal-capacidad')
+const modalDisponible = document.getElementById('modal-disponible')
+const mensajeModal    = document.getElementById('mensaje-modal')
+const btnModalCerrar  = document.getElementById('btn-modal-cerrar')
+const btnModalCancelar = document.getElementById('btn-modal-cancelar')
 
-// Muestra un mensaje de éxito o error debajo del formulario
-function mostrarMensaje(texto, tipo) {
-    mensajeForm.textContent = texto
-    mensajeForm.className = `mensaje-form mensaje-${tipo}`  // 'exito' o 'error'
-    mensajeForm.style.display = 'block'
+// ── Utilidades ────────────────────────────────────────────────────────────────
 
-    // El mensaje desaparece solo después de 3 segundos
-    setTimeout(() => {
-        mensajeForm.style.display = 'none'
-    }, 3000)
+function mostrarMensaje(contenedor, texto, tipo) {
+    contenedor.textContent = texto
+    contenedor.className = `mensaje-form mensaje-${tipo}`
+    contenedor.style.display = 'block'
+    setTimeout(() => { contenedor.style.display = 'none' }, 3000)
 }
 
-// Limpia todos los campos del formulario y lo vuelve al modo "Alta"
-function resetearFormulario() {
-    campoId.value = ''
-    formulario.reset()
-    formTitulo.textContent = 'Agregar nueva cancha'
-    btnGuardar.textContent = 'Agregar cancha'
-    btnCancelar.style.display = 'none'
+function abrirModal() {
+    modalOverlay.classList.add('activo')
+    document.body.style.overflow = 'hidden'
 }
 
-// ── Leer: cargar la tabla de canchas ─────────────────────────────────────────
+function cerrarModal() {
+    modalOverlay.classList.remove('activo')
+    document.body.style.overflow = ''
+    formEditar.reset()
+    mensajeModal.style.display = 'none'
+}
+
+// ── Tabla ─────────────────────────────────────────────────────────────────────
 
 async function cargarTabla() {
     try {
         const respuesta = await fetch(API_URL)
         const canchas = await respuesta.json()
 
-        // Si no hay canchas, mostramos un mensaje en lugar de una tabla vacía
         if (canchas.length === 0) {
             contenedorTabla.innerHTML = '<p class="sin-datos">No hay canchas registradas todavía.</p>'
             return
         }
 
-        // Construimos la tabla dinámicamente con los datos recibidos
         let html = `
             <table class="admin-tabla">
                 <thead>
@@ -87,7 +85,6 @@ async function cargarTabla() {
                         </span>
                     </td>
                     <td class="td-acciones">
-                        <!-- El ID se pasa como atributo data para usarlo en los event listeners -->
                         <button class="btn-accion btn-editar" data-id="${cancha.id}">Editar</button>
                         <button class="btn-accion btn-eliminar" data-id="${cancha.id}">Eliminar</button>
                     </td>
@@ -97,8 +94,6 @@ async function cargarTabla() {
 
         html += '</tbody></table>'
         contenedorTabla.innerHTML = html
-
-        // Asignamos los eventos a los botones recién creados
         asignarEventosBotones()
 
     } catch (error) {
@@ -107,88 +102,102 @@ async function cargarTabla() {
     }
 }
 
-// ── Asignar eventos a los botones de la tabla ─────────────────────────────────
-
-// Se llama cada vez que se recarga la tabla, porque los botones son dinámicos
 function asignarEventosBotones() {
-    // Botones de editar
     document.querySelectorAll('.btn-editar').forEach((btn) => {
-        btn.addEventListener('click', () => cargarCanchaEnFormulario(btn.dataset.id))
+        btn.addEventListener('click', () => abrirModalEdicion(btn.dataset.id))
     })
-
-    // Botones de eliminar
     document.querySelectorAll('.btn-eliminar').forEach((btn) => {
         btn.addEventListener('click', () => confirmarEliminacion(btn.dataset.id))
     })
 }
 
-// ── Editar: cargar datos de una cancha en el formulario ───────────────────────
+// ── Modal de edición ──────────────────────────────────────────────────────────
 
-async function cargarCanchaEnFormulario(id) {
+async function abrirModalEdicion(id) {
     try {
         const respuesta = await fetch(`${API_URL}/${id}`)
         const cancha = await respuesta.json()
 
-        // Llenamos el formulario con los datos actuales de la cancha
-        campoId.value          = cancha.id
-        campoNombre.value      = cancha.nombre
-        campoDeporte.value     = cancha.deporte
-        campoPrecio.value      = cancha.precio
-        campoCapacidad.value   = cancha.capacidad
-        campoDisponible.checked = cancha.disponible
+        modalId.value              = cancha.id
+        modalNombre.value          = cancha.nombre
+        modalDeporte.value         = cancha.deporte
+        modalPrecio.value          = cancha.precio
+        modalCapacidad.value       = cancha.capacidad
+        modalDisponible.checked    = cancha.disponible
 
-        // Cambiamos el título y el botón para indicar que estamos editando
-        formTitulo.textContent = 'Editar cancha'
-        btnGuardar.textContent = 'Guardar cambios'
-        btnCancelar.style.display = 'inline-block'
-
-        // Hacemos scroll hasta el formulario para que el usuario lo vea
-        formulario.scrollIntoView({ behavior: 'smooth' })
+        abrirModal()
 
     } catch (error) {
         console.error('Error al cargar cancha para editar:', error)
-        mostrarMensaje('No se pudieron cargar los datos de la cancha.', 'error')
+        mostrarMensaje(mensajeForm, 'No se pudieron cargar los datos.', 'error')
     }
 }
+
+formEditar.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const id = modalId.value
+    const datos = {
+        nombre:     modalNombre.value.trim(),
+        deporte:    modalDeporte.value,
+        precio:     Number(modalPrecio.value),
+        capacidad:  Number(modalCapacidad.value),
+        disponible: modalDisponible.checked
+    }
+
+    try {
+        const respuesta = await fetch(`${API_URL}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
+
+        if (!respuesta.ok) {
+            const err = await respuesta.json()
+            throw new Error(err.detalle || 'Error al guardar')
+        }
+
+        cerrarModal()
+        mostrarMensaje(mensajeForm, 'Cancha actualizada correctamente.', 'exito')
+        cargarTabla()
+
+    } catch (error) {
+        console.error('Error al actualizar:', error)
+        mostrarMensaje(mensajeModal, `Error: ${error.message}`, 'error')
+    }
+})
+
+btnModalCerrar.addEventListener('click', cerrarModal)
+btnModalCancelar.addEventListener('click', cerrarModal)
+modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) cerrarModal() })
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarModal() })
 
 // ── Eliminar ──────────────────────────────────────────────────────────────────
 
 function confirmarEliminacion(id) {
-    // Confirmación antes de eliminar para evitar borrados accidentales
-    const confirmado = confirm('¿Estás seguro de que querés eliminar esta cancha? Esta acción no se puede deshacer.')
-
-    if (confirmado) {
+    if (confirm('¿Seguro que querés eliminar esta cancha? Esta acción no se puede deshacer.')) {
         eliminarCancha(id)
     }
 }
 
 async function eliminarCancha(id) {
     try {
-        const respuesta = await fetch(`${API_URL}/${id}`, {
-            method: 'DELETE'
-        })
-
-        if (!respuesta.ok) {
-            throw new Error('Error al eliminar')
-        }
-
-        mostrarMensaje('Cancha eliminada correctamente.', 'exito')
-        cargarTabla()  // Recargamos la tabla para reflejar el cambio
-
+        const respuesta = await fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+        if (!respuesta.ok) throw new Error('Error al eliminar')
+        mostrarMensaje(mensajeForm, 'Cancha eliminada correctamente.', 'exito')
+        cargarTabla()
     } catch (error) {
-        console.error('Error al eliminar cancha:', error)
-        mostrarMensaje('No se pudo eliminar la cancha.', 'error')
+        console.error('Error al eliminar:', error)
+        mostrarMensaje(mensajeForm, 'No se pudo eliminar la cancha.', 'error')
     }
 }
 
-// ── Submit del formulario: Alta o Modificación ────────────────────────────────
+// ── Alta ──────────────────────────────────────────────────────────────────────
 
-formulario.addEventListener('submit', async (evento) => {
-    // Prevenimos que el formulario recargue la página
-    evento.preventDefault()
+formulario.addEventListener('submit', async (e) => {
+    e.preventDefault()
 
-    // Construimos el objeto con los datos del formulario
-    const datosCancha = {
+    const datos = {
         nombre:     campoNombre.value.trim(),
         deporte:    campoDeporte.value,
         precio:     Number(campoPrecio.value),
@@ -196,49 +205,27 @@ formulario.addEventListener('submit', async (evento) => {
         disponible: campoDisponible.checked
     }
 
-    const id = campoId.value  // Si tiene valor, estamos editando; si está vacío, es alta
-
     try {
-        let respuesta
-
-        if (id) {
-            // MODIFICACIÓN: el ID existe → hacemos PUT
-            respuesta = await fetch(`${API_URL}/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datosCancha)
-            })
-        } else {
-            // ALTA: no hay ID → hacemos POST
-            respuesta = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datosCancha)
-            })
-        }
+        const respuesta = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
 
         if (!respuesta.ok) {
-            const errorData = await respuesta.json()
-            throw new Error(errorData.detalle || 'Error al guardar')
+            const err = await respuesta.json()
+            throw new Error(err.detalle || 'Error al crear')
         }
 
-        const mensaje = id ? 'Cancha actualizada correctamente.' : 'Cancha creada correctamente.'
-        mostrarMensaje(mensaje, 'exito')
-
-        resetearFormulario()
-        cargarTabla()  // Recargamos la tabla para mostrar el cambio
+        mostrarMensaje(mensajeForm, 'Cancha creada correctamente.', 'exito')
+        formulario.reset()
+        cargarTabla()
 
     } catch (error) {
-        console.error('Error al guardar cancha:', error)
-        mostrarMensaje(`Error: ${error.message}`, 'error')
+        console.error('Error al crear cancha:', error)
+        mostrarMensaje(mensajeForm, `Error: ${error.message}`, 'error')
     }
 })
 
-// ── Botón Cancelar ────────────────────────────────────────────────────────────
-
-btnCancelar.addEventListener('click', resetearFormulario)
-
-// ── Inicialización ────────────────────────────────────────────────────────────
-
-// Cargamos la tabla al abrir la página
+// ── Init ──────────────────────────────────────────────────────────────────────
 cargarTabla()
