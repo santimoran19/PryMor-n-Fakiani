@@ -19,3 +19,14 @@ CREATE TABLE IF NOT EXISTS usuarios (
     password_hash VARCHAR(200) NOT NULL,
     created_at    TIMESTAMP    DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS reservas (
+    id         SERIAL PRIMARY KEY,
+    cancha_id  INTEGER      NOT NULL REFERENCES canchas(id) ON DELETE CASCADE,
+    usuario    VARCHAR(100) NOT NULL,
+    fecha      DATE         NOT NULL,
+    hora       TIME         NOT NULL,
+    estado     VARCHAR(20)  NOT NULL DEFAULT 'pendiente'
+               CHECK (estado IN ('pendiente', 'confirmada', 'cancelada')),
+    created_at TIMESTAMP    DEFAULT NOW()
+);

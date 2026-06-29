@@ -84,7 +84,7 @@ export async function login(req, res) {
                 signed: true,
                 httpOnly: true,
                 sameSite: 'lax',
-                secure: true,
+                secure: process.env.NODE_ENV === 'production', // en local (http) no exige HTTPS
                 maxAge: 1000 * 60 * 60 // 1 hora
             })
 

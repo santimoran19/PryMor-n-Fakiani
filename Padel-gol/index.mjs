@@ -22,6 +22,8 @@ import { fileURLToPath } from 'node:url'
 import rutasCanchas from './modulos/canchas/rutas.canchas.mjs'
 import rutasWebCanchas from './modulos/canchas/rutas.web.canchas.mjs'
 import rutasUsuarios from './modulos/usuarios/rutas.usuarios.mjs'
+import rutasReservas from './modulos/reservas/rutas.reservas.mjs'
+import rutasWebReservas from './modulos/reservas/rutas.web.reservas.mjs'
 import comprobarToken from './middlewares/comprobarToken.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -55,6 +57,12 @@ app.use(rutasCanchas)
 
 // API de solo lectura para la web pública (2 endpoints de lectura)
 app.use(rutasWebCanchas)
+
+// API CRUD de reservas para el panel de administración (mismo criterio que canchas)
+app.use(rutasReservas)
+
+// API de solo lectura de reservas para la web pública (la consume reservas.html)
+app.use(rutasWebReservas)
 
 // ── Iniciar servidor ──────────────────────────────────────────────────────────
 app.listen(PUERTO, () => {
