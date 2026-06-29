@@ -229,3 +229,17 @@ formulario.addEventListener('submit', async (e) => {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 cargarTabla()
+
+// ── Cerrar sesión ─────────────────────────────────────────────────────────────
+const btnLogout = document.getElementById('btn-logout')
+
+btnLogout.addEventListener('click', async () => {
+    try {
+        await fetch('/logout', { method: 'POST' })
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error)
+    } finally {
+        // Redirección dentro de la propia interfaz
+        window.location.href = 'login.html'
+    }
+})

@@ -266,6 +266,26 @@ footer {
     font-weight: 500;
 }
 
+/* ── Login / logout nav link ─────────────────────────────────────────────── */
+.nav-login {
+    color: var(--text-2) !important;
+    font-weight: 500;
+}
+
+.nav-login:hover {
+    color: var(--text-1) !important;
+}
+
+/* ── Login / Registro — tarjeta centrada ─────────────────────────────────── */
+.login-wrapper {
+    max-width: 420px;
+    margin: 48px auto;
+}
+
+.login-wrapper h2 {
+    text-align: center;
+}
+
 /* ── Admin — form section ────────────────────────────────────────────────── */
 .admin-form-section {
     background: var(--surface);

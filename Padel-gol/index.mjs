@@ -1,48 +1,60 @@
-// TP3 - Aplicaciones Web 2 - Padel & Gol
+// TP4 - Aplicaciones Web 2 - Padel & Gol
 // Punto de entrada principal del servidor.
-// En esta etapa refactorizamos el proyecto para seguir el patrón MVC:
-//   - Modelos   → /models   (estructura de datos en la DB)
-//   - Vistas    → /front    (archivos HTML/CSS/JS del cliente)
-//   - Controladores → /controllers (lógica de cada operación)
-// Las rutas actúan como intermediarias entre las peticiones y los controladores.
+//
+// Estructura (patrón MVC, un módulo por entidad):
+//   modulos/canchas/   → modelo, controlador, rutas y vista de las canchas
+//   modulos/usuarios/  → modelo, controlador y rutas de registro/login/logout
+//   middlewares/       → comprobarToken (protege el panel de admin y el CRUD)
+//   conexion.bd.mjs    → conexión a PostgreSQL (Supabase)
+//   iniciar.env.mjs    → carga las variables de entorno desde .env
+//
+// Sobre CORS: no lo habilitamos porque el front-end y la API se sirven desde
+// el mismo dominio y puerto (todo corre adentro de este mismo servidor
+// Express), así que el navegador nunca hace una petición cross-origin.
+// Si en el futuro el front se separara a otro dominio, ahí sí haría falta.
 
+import './iniciar.env.mjs'
 import express from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
-import conectarDB from './config/db.mjs'
-import rutasApiCanchas from './routes/apiCanchas.mjs'
-import rutasWebCanchas from './routes/webCanchas.mjs'
+import cookieParser from 'cookie-parser'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-// Cargar las variables de entorno desde el archivo .env
-// Debe llamarse antes de usar process.env
-dotenv.config()
+import rutasCanchas from './modulos/canchas/rutas.canchas.mjs'
+import rutasWebCanchas from './modulos/canchas/rutas.web.canchas.mjs'
+import rutasUsuarios from './modulos/usuarios/rutas.usuarios.mjs'
+import comprobarToken from './middlewares/comprobarToken.mjs'
 
-const PUERTO = process.env.PORT || 3000
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+const PUERTO = process.env.PUERTO || process.env.PORT || 3000
 const app = express()
 
-// Conectar con la base de datos antes de recibir peticiones
-conectarDB()
-
 // ── Middleware ────────────────────────────────────────────────────────────────
-
-// Permite que Express lea el body de las peticiones en formato JSON
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser(process.env.FIRMA_COOKIE)) // habilita req.signedCookies
 
-// Habilitar CORS para que el front pueda consumir la API desde otro origen
-app.use(cors())
+// ── Panel de administración protegido ────────────────────────────────────────
+// admin.html solo se entrega si hay una sesión válida (cookie con JWT).
+// Si no la hay, comprobarToken redirige a /login.html.
+app.get('/admin.html', comprobarToken, (req, res) => {
+    res.sendFile(path.join(__dirname, 'front', 'admin.html'))
+})
 
-// Servir los archivos estáticos del front-end (HTML, CSS, JS del cliente)
+// Servir el resto de los archivos estáticos del front-end (HTML, CSS, JS del cliente)
 app.use(express.static('front'))
 
 // ── Registro de Rutas ─────────────────────────────────────────────────────────
 
+// Login / registro / logout
+app.use(rutasUsuarios)
+
 // API CRUD para el panel de administración (5 endpoints: 2 lecturas, alta, baja, modificación)
-// Prefijo: /api/canchas
-app.use('/api/canchas', rutasApiCanchas)
+// Las operaciones de escritura están protegidas con comprobarToken
+app.use(rutasCanchas)
 
 // API de solo lectura para la web pública (2 endpoints de lectura)
-// Prefijo: /api/web
-app.use('/api/web', rutasWebCanchas)
+app.use(rutasWebCanchas)
 
 // ── Iniciar servidor ──────────────────────────────────────────────────────────
 app.listen(PUERTO, () => {

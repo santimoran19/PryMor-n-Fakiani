@@ -1,20 +1,23 @@
 {
   "name": "padel-gol",
   "version": "1.0.0",
-  "description": "Back-end para el sitio Padel & Gol - TP3 AW2",
+  "description": "Back-end para el sitio Padel & Gol - TP4 AW2",
   "main": "index.mjs",
   "scripts": {
     "dev": "node --watch index.mjs",
-    "start": "node index.mjs"
+    "start": "node index.mjs",
+    "db:init": "node scripts/setup-db.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.5",
     "express": "5.2.1",
-    "pg": "^8.13.3",
-    "cors": "^2.8.5"
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.13.3"
   }
 }

@@ -7,7 +7,7 @@ Opción A — Usar Supabase (cloud):
 4. En tu máquina, dentro de la carpeta `Padel-gol`, crear un archivo `.env` copiando `.env.example` y pegando la `DATABASE_URL`:
 
    DATABASE_URL="postgresql://user:password@host:5432/dbname"
-   PORT=3000
+   PUERTO=3000
 
 5. Ejecutar:
 
