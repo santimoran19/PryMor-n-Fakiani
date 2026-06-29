@@ -1,20 +1,7 @@
 async function obtenerCanchas() {
     try {
-        let canchas = []
-
-        if (typeof window !== 'undefined' && window.supabaseClient) {
-            try {
-                const { data, error } = await window.supabaseClient.from('canchas').select('*')
-                if (error) throw error
-                canchas = data
-            } catch {
-                const respuesta = await fetch('/api/web/canchas')
-                canchas = await respuesta.json()
-            }
-        } else {
-            const respuesta = await fetch('/api/web/canchas')
-            canchas = await respuesta.json()
-        }
+        const respuesta = await fetch('/api/web/canchas')
+        const canchas = await respuesta.json()
 
         const contenedor = document.getElementById('contenedor-canchas')
         contenedor.innerHTML = ''
