@@ -1,27 +1,27 @@
 const API_URL = '/api/canchas'
 
 // ── Referencias DOM — formulario de alta ─────────────────────────────────────
-const formulario      = document.getElementById('form-cancha')
-const campoId         = document.getElementById('campo-id')
-const campoNombre     = document.getElementById('campo-nombre')
-const campoDeporte    = document.getElementById('campo-deporte')
-const campoPrecio     = document.getElementById('campo-precio')
-const campoCapacidad  = document.getElementById('campo-capacidad')
+const formulario = document.getElementById('form-cancha')
+const campoId = document.getElementById('campo-id')
+const campoNombre = document.getElementById('campo-nombre')
+const campoDeporte = document.getElementById('campo-deporte')
+const campoPrecio = document.getElementById('campo-precio')
+const campoCapacidad = document.getElementById('campo-capacidad')
 const campoDisponible = document.getElementById('campo-disponible')
-const mensajeForm     = document.getElementById('mensaje-form')
+const mensajeForm = document.getElementById('mensaje-form')
 const contenedorTabla = document.getElementById('contenedor-tabla')
 
 // ── Referencias DOM — modal de edición ───────────────────────────────────────
-const modalOverlay    = document.getElementById('modal-overlay')
-const formEditar      = document.getElementById('form-editar')
-const modalId         = document.getElementById('modal-id')
-const modalNombre     = document.getElementById('modal-nombre')
-const modalDeporte    = document.getElementById('modal-deporte')
-const modalPrecio     = document.getElementById('modal-precio')
-const modalCapacidad  = document.getElementById('modal-capacidad')
+const modalOverlay = document.getElementById('modal-overlay')
+const formEditar = document.getElementById('form-editar')
+const modalId = document.getElementById('modal-id')
+const modalNombre = document.getElementById('modal-nombre')
+const modalDeporte = document.getElementById('modal-deporte')
+const modalPrecio = document.getElementById('modal-precio')
+const modalCapacidad = document.getElementById('modal-capacidad')
 const modalDisponible = document.getElementById('modal-disponible')
-const mensajeModal    = document.getElementById('mensaje-modal')
-const btnModalCerrar  = document.getElementById('btn-modal-cerrar')
+const mensajeModal = document.getElementById('mensaje-modal')
+const btnModalCerrar = document.getElementById('btn-modal-cerrar')
 const btnModalCancelar = document.getElementById('btn-modal-cancelar')
 
 // ── Utilidades ────────────────────────────────────────────────────────────────
@@ -74,22 +74,24 @@ async function cargarTabla() {
 
         canchas.forEach((cancha) => {
             html += `
-                <tr>
-                    <td>${cancha.nombre}</td>
-                    <td>${cancha.deporte}</td>
-                    <td>$${cancha.precio}</td>
-                    <td>${cancha.capacidad} personas</td>
-                    <td>
-                        <span class="${cancha.disponible ? 'disponible' : 'ocupada'}">
-                            ${cancha.disponible ? 'Sí' : 'No'}
-                        </span>
-                    </td>
-                    <td class="td-acciones">
-                        <button class="btn-accion btn-editar" data-id="${cancha.id}">Editar</button>
-                        <button class="btn-accion btn-eliminar" data-id="${cancha.id}">Eliminar</button>
-                    </td>
-                </tr>
-            `
+        <tr>
+            <td>${cancha.nombre}</td>
+            <td>${cancha.deporte}</td>
+            <td>$${cancha.precio}</td>
+            <td>${cancha.capacidad} personas</td>
+            <td>
+                <span class="${cancha.disponible ? 'disponible' : 'ocupada'}">
+                    ${cancha.disponible ? 'Sí' : 'No'}
+                </span>
+            </td>
+            <td>
+                <div class="td-acciones">
+                    <button class="btn-accion btn-editar" data-id="${cancha.id}">Editar</button>
+                    <button class="btn-accion btn-eliminar" data-id="${cancha.id}">Eliminar</button>
+                </div>
+            </td>
+        </tr>
+    `
         })
 
         html += '</tbody></table>'
@@ -118,12 +120,12 @@ async function abrirModalEdicion(id) {
         const respuesta = await fetch(`${API_URL}/${id}`)
         const cancha = await respuesta.json()
 
-        modalId.value              = cancha.id
-        modalNombre.value          = cancha.nombre
-        modalDeporte.value         = cancha.deporte
-        modalPrecio.value          = cancha.precio
-        modalCapacidad.value       = cancha.capacidad
-        modalDisponible.checked    = cancha.disponible
+        modalId.value = cancha.id
+        modalNombre.value = cancha.nombre
+        modalDeporte.value = cancha.deporte
+        modalPrecio.value = cancha.precio
+        modalCapacidad.value = cancha.capacidad
+        modalDisponible.checked = cancha.disponible
 
         abrirModal()
 
@@ -138,10 +140,10 @@ formEditar.addEventListener('submit', async (e) => {
 
     const id = modalId.value
     const datos = {
-        nombre:     modalNombre.value.trim(),
-        deporte:    modalDeporte.value,
-        precio:     Number(modalPrecio.value),
-        capacidad:  Number(modalCapacidad.value),
+        nombre: modalNombre.value.trim(),
+        deporte: modalDeporte.value,
+        precio: Number(modalPrecio.value),
+        capacidad: Number(modalCapacidad.value),
         disponible: modalDisponible.checked
     }
 
@@ -198,10 +200,10 @@ formulario.addEventListener('submit', async (e) => {
     e.preventDefault()
 
     const datos = {
-        nombre:     campoNombre.value.trim(),
-        deporte:    campoDeporte.value,
-        precio:     Number(campoPrecio.value),
-        capacidad:  Number(campoCapacidad.value),
+        nombre: campoNombre.value.trim(),
+        deporte: campoDeporte.value,
+        precio: Number(campoPrecio.value),
+        capacidad: Number(campoCapacidad.value),
         disponible: campoDisponible.checked
     }
 

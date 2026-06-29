@@ -15,4 +15,12 @@ rutasWebReservas.get('/api/web/reservas', controlador.obtenerReservas)
 // GET /api/web/reservas/:id
 rutasWebReservas.get('/api/web/reservas/:id', controlador.obtenerReservaPorId)
 
+// Endpoint 3: Crear una reserva desde la web pública (sin necesidad de login,
+// es la idea central de un sistema de gestión de reservas: que cualquier
+// visitante pueda reservar una cancha). La validación de conflicto de
+// horario está en el controlador, así que dos personas no pueden reservar
+// la misma cancha a la misma fecha/hora.
+// POST /api/web/reservas
+rutasWebReservas.post('/api/web/reservas', controlador.crearReserva)
+
 export default rutasWebReservas

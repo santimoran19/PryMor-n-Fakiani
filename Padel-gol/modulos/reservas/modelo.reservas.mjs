@@ -12,7 +12,7 @@ export async function encontrarTodas() {
     try {
         const resultado = await pool.query(`
             SELECT r.id, r.cancha_id, c.nombre AS cancha, r.usuario,
-                   r.fecha, r.hora, r.estado, r.created_at
+                   r.fecha::text AS fecha, r.hora, r.estado, r.created_at
             FROM reservas r
             JOIN canchas c ON c.id = r.cancha_id
             ORDER BY r.fecha DESC, r.hora DESC
@@ -32,7 +32,7 @@ export async function encontrarPorId(id) {
     try {
         const resultado = await pool.query(`
             SELECT r.id, r.cancha_id, c.nombre AS cancha, r.usuario,
-                   r.fecha, r.hora, r.estado, r.created_at
+                   r.fecha::text AS fecha, r.hora, r.estado, r.created_at
             FROM reservas r
             JOIN canchas c ON c.id = r.cancha_id
             WHERE r.id = $1
@@ -40,6 +40,25 @@ export async function encontrarPorId(id) {
         return resultado.rows[0]
     } catch (error) {
         console.error('Error en el modelo (encontrarPorId reservas):', error.message)
+        throw error
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Buscar si ya existe una reserva activa (no cancelada) para la misma
+// cancha, fecha y hora. Se usa para evitar reservas duplicadas/superpuestas.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function encontrarConflicto({ cancha_id, fecha, hora }) {
+    try {
+        const resultado = await pool.query(
+            `SELECT id FROM reservas
+             WHERE cancha_id = $1 AND fecha = $2 AND hora = $3
+               AND estado != 'cancelada'`,
+            [cancha_id, fecha, hora]
+        )
+        return resultado.rows[0]
+    } catch (error) {
+        console.error('Error en el modelo (encontrarConflicto reservas):', error.message)
         throw error
     }
 }

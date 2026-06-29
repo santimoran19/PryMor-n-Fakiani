@@ -54,6 +54,11 @@ export async function crearReserva(req, res) {
             return res.status(400).json({ error: 'Faltan campos obligatorios: cancha_id, usuario, fecha, hora' })
         }
 
+        const conflicto = await modelo.encontrarConflicto({ cancha_id, fecha, hora })
+        if (conflicto) {
+            return res.status(409).json({ error: 'Ese horario ya está reservado para esa cancha' })
+        }
+
         const nuevaReserva = await modelo.crear({ cancha_id, usuario, fecha, hora, estado })
 
         // 201 Created: el recurso fue creado exitosamente

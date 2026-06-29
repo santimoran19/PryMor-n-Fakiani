@@ -22,7 +22,43 @@
     </header>
 
     <main>
-        <h2>Reservas registradas</h2>
+        <div class="login-wrapper">
+            <h2>Reservar una cancha</h2>
+
+            <section class="admin-form-section">
+                <form id="form-reserva" class="admin-form" style="grid-template-columns: 1fr 1fr;">
+                    <div class="form-grupo" style="grid-column: 1 / -1;">
+                        <label for="campo-cancha">Cancha</label>
+                        <select id="campo-cancha" required>
+                            <option value="">-- Seleccioná una cancha --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grupo" style="grid-column: 1 / -1;">
+                        <label for="campo-nombre-reserva">Tu nombre</label>
+                        <input type="text" id="campo-nombre-reserva" placeholder="¿A nombre de quién reservás?" required>
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="campo-fecha">Fecha</label>
+                        <input type="date" id="campo-fecha" required>
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="campo-hora">Hora</label>
+                        <input type="time" id="campo-hora" required>
+                    </div>
+
+                    <div class="form-botones" style="grid-column: 1 / -1;">
+                        <button type="submit" class="btn-admin btn-guardar">Reservar</button>
+                    </div>
+                </form>
+
+                <div id="mensaje-reserva" class="mensaje-form" style="display:none;"></div>
+            </section>
+        </div>
+
+        <h2 class="RR-center">Reservas registradas</h2>
         <div id="contenedor-reservas">
             <p>Cargando reservas...</p>
         </div>

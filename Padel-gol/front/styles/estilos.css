@@ -1,5 +1,7 @@
 /* ── Reset ───────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -7,18 +9,18 @@
 
 /* ── Tokens ──────────────────────────────────────────────────────────────── */
 :root {
-    --blue:        #007AFF;
-    --blue-hover:  #0066dd;
-    --bg:          #f5f5f7;
-    --surface:     #ffffff;
-    --text-1:      #000000;
-    --text-2:      #555555;
-    --border:      #d2d2d7;
-    --green:       #34c759;
-    --red:         #ff3b30;
-    --radius:      14px;
-    --radius-sm:   10px;
-    --shadow:      0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    --blue: #007AFF;
+    --blue-hover: #0066dd;
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --text-1: #000000;
+    --text-2: #555555;
+    --border: #d2d2d7;
+    --green: #34c759;
+    --red: #ff3b30;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 4px 16px rgba(0, 0, 0, .06);
 }
 
 /* ── Base ────────────────────────────────────────────────────────────────── */
@@ -35,7 +37,7 @@ body {
 
 /* ── Header ─────────────────────────────────────────────────────────────── */
 header {
-    background: rgba(255,255,255,0.88);
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     border-bottom: 1px solid var(--border);
@@ -81,7 +83,7 @@ main {
     flex: 1;
 }
 
-main > h2 {
+main>h2 {
     font-size: 1.6rem;
     font-weight: 700;
     color: var(--text-1);
@@ -109,7 +111,7 @@ main > h2 {
 
 .hero p {
     font-size: 1.1rem;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255, 255, 255, 0.85);
     max-width: 540px;
     margin: 0 auto 32px;
     line-height: 1.65;
@@ -163,7 +165,7 @@ main > h2 {
 /* ── Canchas ─────────────────────────────────────────────────────────────── */
 #contenedor-canchas {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 }
 
@@ -176,7 +178,7 @@ main > h2 {
 }
 
 .card-cancha:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,.1), 0 8px 24px rgba(0,0,0,.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1), 0 8px 24px rgba(0, 0, 0, .08);
 }
 
 .card-cancha h3 {
@@ -200,6 +202,11 @@ main > h2 {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.RR-center {
+    display: flex;
+    justify-content: center;
 }
 
 .card-reserva {
@@ -231,7 +238,7 @@ main > h2 {
     display: inline-block;
     margin-top: 12px;
     padding: 3px 12px;
-    background: rgba(52,199,89,.12);
+    background: rgba(52, 199, 89, .12);
     color: #1a7d39;
     border-radius: 980px;
     font-size: 0.78rem;
@@ -242,7 +249,7 @@ main > h2 {
     display: inline-block;
     margin-top: 12px;
     padding: 3px 12px;
-    background: rgba(255,59,48,.1);
+    background: rgba(255, 59, 48, .1);
     color: #c0392b;
     border-radius: 980px;
     font-size: 0.78rem;
@@ -293,6 +300,7 @@ footer {
     padding: 28px 30px;
     box-shadow: var(--shadow);
     margin-bottom: 24px;
+    margin-top: 16px;
 }
 
 .admin-form-section h3,
@@ -331,7 +339,10 @@ footer {
 }
 
 .form-grupo input[type="text"],
+.form-grupo input[type="password"],
 .form-grupo input[type="number"],
+.form-grupo input[type="date"],
+.form-grupo input[type="time"],
 .form-grupo select {
     padding: 11px 14px;
     border: 1px solid var(--border);
@@ -341,15 +352,19 @@ footer {
     background: var(--bg);
     color: var(--text-1);
     transition: border-color 0.15s, box-shadow 0.15s;
-    -webkit-appearance: none;
 }
 
 .form-grupo input:focus,
 .form-grupo select:focus {
     outline: none;
     border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(0,113,227,.15);
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, .15);
     background: white;
+}
+
+.form-grupo input::placeholder {
+    color: var(--text-2);
+    opacity: 0.7;
 }
 
 .form-grupo input[type="checkbox"] {
@@ -404,12 +419,12 @@ footer {
 }
 
 .mensaje-exito {
-    background: rgba(52,199,89,.1);
+    background: rgba(52, 199, 89, .1);
     color: #1a7d39;
 }
 
 .mensaje-error {
-    background: rgba(255,59,48,.1);
+    background: rgba(255, 59, 48, .1);
     color: #c0392b;
 }
 
@@ -447,6 +462,7 @@ footer {
     border-bottom: 1px solid var(--bg);
     color: var(--text-1);
     font-size: 0.95rem;
+    vertical-align: middle;
 }
 
 .admin-tabla tbody tr:last-child td {
@@ -460,6 +476,7 @@ footer {
 .td-acciones {
     display: flex;
     gap: 8px;
+    align-items: center;
 }
 
 .btn-accion {
@@ -474,7 +491,7 @@ footer {
 }
 
 .btn-editar {
-    background: rgba(0,113,227,.1);
+    background: rgba(0, 113, 227, .1);
     color: var(--blue);
 }
 
@@ -483,7 +500,7 @@ footer {
 }
 
 .btn-eliminar {
-    background: rgba(255,59,48,.1);
+    background: rgba(255, 59, 48, .1);
     color: var(--red);
 }
 
@@ -503,7 +520,7 @@ footer {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     z-index: 200;
@@ -522,13 +539,20 @@ footer {
     width: 100%;
     max-width: 560px;
     margin: 24px;
-    box-shadow: 0 24px 64px rgba(0,0,0,.22);
-    animation: modalIn 0.2s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .22);
+    animation: modalIn 0.2s cubic-bezier(.4, 0, .2, 1);
 }
 
 @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.96) translateY(10px); }
-    to   { opacity: 1; transform: scale(1)    translateY(0); }
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .modal-header {
@@ -572,19 +596,24 @@ footer {
     header {
         padding: 0 20px;
     }
+
     main {
         margin: 32px auto;
         padding: 0 16px;
     }
+
     .admin-form {
         grid-template-columns: 1fr;
     }
+
     .hero {
         padding: 52px 24px;
     }
+
     .hero h2 {
         font-size: 1.7rem;
     }
+
     .modal {
         padding: 28px 20px;
     }
